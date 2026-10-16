@@ -1,0 +1,48 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Applications | Admin</title><meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="assets/style.css"></head><body>
+<header class="site-header"><div class="wrap"><span class="brand">Okapi Lantern Labs · Admin</span><a class="navlink" href="./">View site</a></div></header>
+<main class="wrap admin">
+  <section id="login" class="card login">
+    <h2 style="margin-top:0">Sign in</h2>
+    <form id="login-form"><label class="field"><span class="lbl">Admin passcode</span><input id="pass" type="password" autocomplete="current-password" required></label>
+    <p class="error" id="login-error" hidden></p><button class="btn" id="login-btn">View applications</button></form>
+  </section>
+  <section id="dash" hidden>
+    <h1>Applications <span id="count" class="muted"></span></h1>
+    <div class="toolbar">
+      <select id="filter"><option value="">All jobs</option><option value="qa-automation-engineer">QA Automation Engineer</option><option value="senior-test-engineer">Senior Test Engineer</option><option value="zookeeper-engineer">Zookeeper Engineer</option></select>
+      <button class="btn ghost" id="refresh">Refresh</button><button class="btn" id="csv">Export CSV</button>
+      <span class="muted">Resume links expire after 15 minutes. Click Refresh for new ones.</span>
+    </div>
+    <div class="tablewrap"><table><thead><tr><th>Date</th><th>Job</th><th>Name</th><th>Email</th><th>Years of experience</th><th>Authorized remote</th><th>Resume</th><th>App ID</th></tr></thead><tbody id="rows"></tbody></table></div>
+  </section>
+</main>
+<script>
+const FN = 'https://wayiiqdzqwquivrwtksv.supabase.co/functions/v1/va-assessment-admin';
+const JOBS = {'qa-automation-engineer':'QA Automation Engineer','senior-test-engineer':'Senior Test Engineer','zookeeper-engineer':'Zookeeper Engineer'};
+let pass = '', data = [];
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = d => new Date(d).toLocaleString('en-US', {timeZone:'America/New_York', dateStyle:'medium', timeStyle:'short'}) + ' ET';
+async function load(){
+  const r = await fetch(FN, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({passcode: pass})});
+  if (r.status === 401) throw new Error('Wrong passcode.');
+  if (!r.ok) throw new Error('Could not load applications. Try again.');
+  data = (await r.json()).applications; render();
+}
+function rows(){ const f = $('filter').value; return data.filter(a => !f || a.job_slug === f); }
+function render(){
+  const list = rows(); $('count').textContent = '(' + list.length + ')';
+  $('rows').innerHTML = list.length ? list.map(a => `<tr><td>${fmt(a.created_at)}</td><td>${esc(JOBS[a.job_slug]||a.job_slug)}</td><td>${esc(a.full_name)}</td><td><a href="mailto:${esc(a.email)}">${esc(a.email)}</a></td><td>${esc(a.answers?.years_experience)}</td><td>${esc(a.answers?.remote_authorized)}</td><td>${a.resume_url?`<a href="${esc(a.resume_url)}">Download resume</a>`:'Missing'}</td><td><code>${esc(a.application_ref)}</code></td></tr>`).join('') : '<tr><td colspan="8" class="muted">No applications yet.</td></tr>';
+}
+$('login-form').onsubmit = async e => { e.preventDefault(); pass = $('pass').value.trim(); $('login-error').hidden = true; $('login-btn').disabled = true;
+  try { await load(); $('login').hidden = true; $('dash').hidden = false; } catch (x) { $('login-error').textContent = x.message; $('login-error').hidden = false; } finally { $('login-btn').disabled = false; } };
+$('refresh').onclick = () => load().catch(x => alert(x.message));
+$('filter').onchange = render;
+$('csv').onclick = () => {
+  const cell = v => '"' + String(v ?? '').replace(/"/g,'""') + '"';
+  const head = ['Date (ET)','Job','Name','Email','Years of experience','Authorized remote','Application ID','Resume file','Resume link (expires in 15 min)'];
+  const lines = rows().map(a => [fmt(a.created_at), JOBS[a.job_slug]||a.job_slug, a.full_name, a.email, a.answers?.years_experience, a.answers?.remote_authorized, a.application_ref, a.resume_filename, a.resume_url].map(cell).join(','));
+  const blob = new Blob([[head.map(cell).join(','), ...lines].join('\r\n')], {type:'text/csv'});
+  const u = URL.createObjectURL(blob); const l = document.createElement('a'); l.href = u; l.download = 'applications-' + new Date().toISOString().slice(0,10) + '.csv'; l.click(); URL.revokeObjectURL(u);
+};
+</script></body></html>

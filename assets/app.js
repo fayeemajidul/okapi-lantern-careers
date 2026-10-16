@@ -29,7 +29,7 @@ function onFile() {
   const f = fileInput.files[0];
   const e = checkFile(f);
   drop.classList.toggle('has-file', !!f && !e);
-  dropText.innerHTML = f ? `<strong>${f.name.replace(/</g, '&lt;')}</strong><br><small>${(f.size / 1024).toFixed(0)} KB · click to change</small>` : '<strong>Attach a file</strong> or drag it here<br><small>PDF, DOC, or DOCX, up to 5 MB</small>';
+  dropText.innerHTML = f ? `<strong>${f.name.replace(/</g, '&lt;')}</strong><br><small>${(f.size / 1024).toFixed(0)} KB · click to change</small>` : '<strong>Upload a file</strong><br><small>PDF, DOC, or DOCX, up to 5 MB</small>';
   showErr(f ? e : '');
 }
 fileInput.addEventListener('change', onFile);
@@ -44,13 +44,12 @@ form.addEventListener('submit', async e => {
   const fd = new FormData(form);
   const name = (fd.get('full_name') || '').trim();
   const email = (fd.get('email') || '').trim();
-  const linkedin = (fd.get('linkedin_url') || '').trim();
+  const linkedin = '';
   const file = fileInput.files[0];
 
   const bad = [];
   if (name.length < 2) bad.push(['full_name', 'Please enter your full name.']);
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) bad.push(['email', 'Please enter a valid email address.']);
-  if (linkedin && !/^https?:\/\/.+\..+/.test(linkedin)) bad.push(['linkedin_url', 'LinkedIn URL should start with https://']);
   const answers = {};
   form.querySelectorAll('[name^="q_"]').forEach(el => {
     const k = el.name.slice(2);
@@ -58,7 +57,6 @@ form.addEventListener('submit', async e => {
   });
   for (const [k, v] of Object.entries(answers)) if (!v) bad.push(['q_' + k, 'Please answer all the questions.']);
   const fe = checkFile(file); if (fe) bad.push(['resume', fe]);
-  if (!fd.get('consent')) bad.push(['consent', 'Please tick the consent box to continue.']);
   if (bad.length) {
     bad.forEach(([n]) => form.querySelectorAll(`[name="${n}"]`).forEach(el => (el.closest('.field, .check, .drop') || el).classList.add('invalid')));
     showErr(bad[0][1]);

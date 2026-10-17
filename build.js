@@ -17,7 +17,7 @@ function jobPage(j){
 <main class="wrap narrow">
   <a class="back" href="${base}">← All roles</a>
   <h1>${esc(j.title)}</h1>
-  <div class="meta"><span>${esc(j.location)}</span><span>${esc(j.type)}</span><span>${esc(j.salary)}</span></div>
+  <p class="meta">${esc(j.location)} · ${esc(j.type)} · ${esc(j.salary)}</p>
   <p class="lead">${esc(j.summary)}</p>
   <h2>Responsibilities</h2>${list(j.responsibilities)}
   <h2>Requirements</h2>${list(j.requirements)}

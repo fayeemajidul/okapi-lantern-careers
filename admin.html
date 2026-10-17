@@ -43,6 +43,6 @@ $('csv').onclick = () => {
   const head = ['Date (ET)','Job','Name','Email','Years of experience','Authorized remote','Application ID','Resume file','Resume link (expires in 15 min)'];
   const lines = rows().map(a => [fmt(a.created_at), JOBS[a.job_slug]||a.job_slug, a.full_name, a.email, a.answers?.years_experience, a.answers?.remote_authorized, a.application_ref, a.resume_filename, a.resume_url].map(cell).join(','));
   const blob = new Blob([[head.map(cell).join(','), ...lines].join('\r\n')], {type:'text/csv'});
-  const u = URL.createObjectURL(blob); const l = document.createElement('a'); l.href = u; l.download = 'applications-' + new Date().toISOString().slice(0,10) + '.csv'; l.click(); URL.revokeObjectURL(u);
+  const u = URL.createObjectURL(blob); const l = document.createElement('a'); l.href = u; l.download = 'applications-' + new Date().toLocaleDateString('en-CA',{timeZone:'America/New_York'}) + '.csv'; l.click(); URL.revokeObjectURL(u);
 };
 </script></body></html>

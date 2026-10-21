@@ -42,7 +42,7 @@ function onFile() {
       preview.innerHTML = `<p><strong>Preview</strong> · this is how your résumé will look. <a href="${previewUrl}" target="_blank" rel="noopener">Open in a new tab</a></p><iframe title="Résumé preview" src="${previewUrl}#view=FitH"></iframe>`;
       preview.hidden = false;
     } else if (f && !e) {
-      preview.innerHTML = '<p>Preview is available for PDF files only.</p>'; preview.hidden = false;
+      preview.innerHTML = `<p><strong>${f.name.replace(/</g, '&lt;')}</strong> is attached. Preview is available for PDF files only.</p>`; preview.hidden = false;
     } else { preview.innerHTML = ''; preview.hidden = true; }
   }
 }

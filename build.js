@@ -3,7 +3,7 @@ const jobs = require('./jobs.js');
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const COMPANY = 'Okapi Lantern Labs';
 const icon = `<svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#1f3b2d"/><path d="M16 6c-3 3-5 6-5 9a5 5 0 0010 0c0-3-2-6-5-9z" fill="#f6b73c"/><path d="M11 22h10v3H11z" fill="#9fd3b0"/></svg>`;
-const head = (title, base) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="${base}assets/style.css?v=2"></head><body>`;
+const head = (title, base) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="robots" content="noindex"><link rel="stylesheet" href="${base}assets/style.css?v=3"></head><body>`;
 const header = base => `<header class="site-header"><div class="wrap"><a class="brand" href="${base}">${icon}<span>${COMPANY}</span></a><a class="navlink" href="${base}">Open roles</a></div></header>`;
 const footer = `<footer class="site-footer"><div class="wrap">© 2026 ${COMPANY} · Equal opportunity employer</div></footer>`;
 const list = a => `<ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
@@ -12,21 +12,19 @@ function q(x){
   return `<fieldset class="field"><legend class="lbl">${esc(x.label)} <span class="req">*</span></legend><div class="radios">${x.options.map(o=>`<label class="radio"><input type="radio" name="q_${x.id}" value="${esc(o)}"> ${esc(o)}</label>`).join('')}</div></fieldset>`;
 }
 const STEPS = [
-  "Create a separate resume for each of the two jobs. Each resume should be the best possible fit for that one posting.",
-  "Match the tools and keywords listed in that specific job. Use the Required tools list and the Requirements as your guide.",
-  "Keep the years of experience consistent. Use the same total years on both resumes and in the form.",
-  "Do not copy the job description word for word. Write it the way a real resume reads, in your own words.",
-  "Use a placeholder candidate name of your choosing, for example Alex Rivera. Any working email address is fine.",
-  "Save each resume as a PDF and upload it. After you choose your file you can view it right on the page before you submit.",
-  "Apply to both jobs. Job A is the QA Automation Engineer role and Job B is the SDET role."
+  "Make one resume per job",
+  "Match that job's required tools",
+  "Keep your years of experience the same",
+  "Use your own words, not the posting",
+  "Use any made up name, upload as PDF"
 ];
 const steps = `<ol class="steps">${STEPS.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`;
-const instrBox = (base) => `<aside class="instr"><h2>Interview assessment instructions</h2>${steps}<p class="muted"><a href="${base}interview.html">See both jobs on the assessment page</a></p></aside>`;
+const instrBox = (base) => `<aside class="instr"><h2>How to apply</h2>${steps}<p class="muted">Apply to both jobs. <a href="${base}listings.html">See all listings</a></p></aside>`;
 function jobPage(j){
   const base='../../';
   return head(`${j.title} | ${COMPANY}`, base) + header(base) + `
 <main class="wrap narrow">
-  <a class="back" href="${j.inCall?base+'interview.html':base}">← ${j.inCall?'Interview assessment':'All roles'}</a>
+  <a class="back" href="${j.inCall?base+'listings.html':base}">← ${j.inCall?'Job Listings':'All roles'}</a>
   ${j.inCall?`<p class="tag">${esc(j.ref)}</p>`:''}
   <h1>${esc(j.title)}</h1>
   <p class="meta">${esc(j.location)} · ${esc(j.type)} · ${esc(j.salary)}</p>
@@ -55,7 +53,7 @@ function jobPage(j){
       <a class="btn ghost" href="${base}">View other roles</a>
     </div>
   </section>
-</main>` + footer + `<script type="module" src="${base}assets/app.js?v=2"></script></body></html>`;
+</main>` + footer + `<script type="module" src="${base}assets/app.js?v=3"></script></body></html>`;
 }
 function indexPage(){
   return head(`Careers | ${COMPANY}`, './') + header('./') + `
@@ -68,15 +66,16 @@ function indexPage(){
 fs.writeFileSync('index.html', indexPage());
 function interviewPage(){
   const ic = jobs.filter(j=>j.inCall);
-  return head(`Interview assessment | ${COMPANY}`, './') + header('./') + `
+  return head(`Job Listings | ${COMPANY}`, './') + header('./') + `
 <main class="wrap narrow">
-  <h1>Interview assessment</h1>
-  <p class="lead">During our call you will apply to the two jobs below. Read each posting carefully, then build a resume that fits it.</p>
-  <aside class="instr"><h2>Instructions</h2>${steps}</aside>
+  <h1>Job Listings</h1>
+  <p class="lead">Two open roles. Apply to both.</p>
+  <aside class="instr"><h2>How to apply</h2>${steps}</aside>
   <ul class="job-list">${ic.map(j=>`<li><a class="job-row" href="jobs/${j.slug}/"><div><p class="tag">${esc(j.ref)}</p><h3>${esc(j.title)}</h3><p class="muted">${esc(j.location)} · ${esc(j.type)}</p><p class="muted"><strong>Tools:</strong> ${esc(j.tools.join(', '))}</p></div><span class="arrow">View and apply →</span></a></li>`).join('')}</ul>
 </main>` + footer + `</body></html>`;
 }
-fs.writeFileSync('interview.html', interviewPage());
+fs.writeFileSync('listings.html', interviewPage());
+fs.writeFileSync('interview.html', '<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url=listings.html"><link rel="canonical" href="listings.html"><script>location.replace("listings.html")</script></head><body><a href="listings.html">Job Listings</a></body></html>');
 for(const j of jobs){ fs.mkdirSync(path.join('jobs',j.slug),{recursive:true}); fs.writeFileSync(path.join('jobs',j.slug,'index.html'), jobPage(j)); }
 fs.writeFileSync('.nojekyll','');
 console.log('built');

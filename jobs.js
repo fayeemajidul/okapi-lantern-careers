@@ -74,7 +74,7 @@ module.exports = [
 const yrs2 = tool => ({ id: "years_experience", label: `How many years of experience do you have with ${tool}?`, type: "select", options: ["Less than 1","1 to 2","3 to 5","More than 5"] });
 module.exports.push(
 {
-  slug: "ic-qa-automation-engineer", inCall: true, ref: "Interview Assessment Job A",
+  slug: "ic-qa-automation-engineer", inCall: true, ref: "Job A",
   title: "QA Automation Engineer",
   location: "Remote, United States", type: "Full time",
   salary: "$100,000 to $130,000 USD per year",
@@ -105,7 +105,7 @@ module.exports.push(
   questions: [yrs2("Playwright and TypeScript"), auth]
 },
 {
-  slug: "ic-sdet", inCall: true, ref: "Interview Assessment Job B",
+  slug: "ic-sdet", inCall: true, ref: "Job B",
   title: "SDET, Software Development Engineer in Test",
   location: "Remote, United States", type: "Full time",
   salary: "$125,000 to $155,000 USD per year",

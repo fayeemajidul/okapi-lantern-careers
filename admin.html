@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Applications | Admin</title><meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="assets/style.css?v=2"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Applications | Admin</title><meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="assets/style.css?v=3"></head><body>
 <header class="site-header"><div class="wrap"><span class="brand">Okapi Lantern Labs · Admin</span><a class="navlink" href="./">View site</a></div></header>
 <main class="wrap admin">
   <section id="login" class="card login">
@@ -9,7 +9,7 @@
   <section id="dash" hidden>
     <h1>Applications <span id="count" class="muted"></span></h1>
     <div class="toolbar">
-      <select id="filter"><option value="">All jobs</option><option value="qa-automation-engineer">QA Automation Engineer</option><option value="senior-test-engineer">Senior Test Engineer</option><option value="zookeeper-engineer">Zookeeper Engineer</option><option value="ic">Interview assessment, both jobs</option><option value="ic-qa-automation-engineer">Interview A: QA Automation Engineer</option><option value="ic-sdet">Interview B: SDET</option></select>
+      <select id="filter"><option value="">All jobs</option><option value="qa-automation-engineer">QA Automation Engineer</option><option value="senior-test-engineer">Senior Test Engineer</option><option value="zookeeper-engineer">Zookeeper Engineer</option><option value="ic">Listings A and B</option><option value="ic-qa-automation-engineer">Listing A: QA Automation Engineer</option><option value="ic-sdet">Listing B: SDET</option></select>
       <button class="btn ghost" id="refresh">Refresh</button><button class="btn" id="csv">Export CSV</button>
       <span class="muted">Resume links expire after 15 minutes. Click Refresh for new ones.</span>
     </div>
@@ -19,7 +19,7 @@
 <div id="viewer" class="modal" hidden role="dialog" aria-modal="true"><div class="modal-box"><div class="modal-head"><strong id="v-title"></strong><span><a id="v-dl" class="btn ghost" href="#">Download</a> <button class="btn" id="v-close">Close</button></span></div><div class="modal-body" id="v-body"></div></div></div>
 <script>
 const FN = 'https://wayiiqdzqwquivrwtksv.supabase.co/functions/v1/va-assessment-admin';
-const JOBS = {'qa-automation-engineer':'QA Automation Engineer','senior-test-engineer':'Senior Test Engineer','zookeeper-engineer':'Zookeeper Engineer','ic-qa-automation-engineer':'Interview A: QA Automation Engineer','ic-sdet':'Interview B: SDET'};
+const JOBS = {'qa-automation-engineer':'QA Automation Engineer','senior-test-engineer':'Senior Test Engineer','zookeeper-engineer':'Zookeeper Engineer','ic-qa-automation-engineer':'Listing A: QA Automation Engineer','ic-sdet':'Listing B: SDET'};
 const isIC = s => String(s||'').startsWith('ic-');
 let pass = '', data = [];
 const $ = id => document.getElementById(id);
@@ -34,7 +34,7 @@ async function load(){
 function rows(){ const f = $('filter').value; return data.filter(a => !f || (f === 'ic' ? isIC(a.job_slug) : a.job_slug === f)); }
 function render(){
   const list = rows(); $('count').textContent = '(' + list.length + ')';
-  $('rows').innerHTML = list.length ? list.map((a,i) => `<tr${isIC(a.job_slug)?' class="ic"':''}><td>${fmt(a.created_at)}</td><td>${isIC(a.job_slug)?'<span class="tag">Interview</span><br>':''}${esc(JOBS[a.job_slug]||a.job_slug)}</td><td>${esc(a.full_name)}</td><td><a href="mailto:${esc(a.email)}">${esc(a.email)}</a></td><td>${esc(a.answers?.years_experience)}</td><td>${esc(a.answers?.remote_authorized)}</td><td>${a.resume_url?`<button class="linkbtn" data-view="${data.indexOf(a)}">View</button> · <a href="${esc(a.resume_url)}">Download</a>`:'Missing'}</td><td><code>${esc(a.application_ref)}</code></td></tr>`).join('') : '<tr><td colspan="8" class="muted">No applications yet.</td></tr>';
+  $('rows').innerHTML = list.length ? list.map((a,i) => `<tr${isIC(a.job_slug)?' class="ic"':''}><td>${fmt(a.created_at)}</td><td>${isIC(a.job_slug)?'<span class="tag">Listing</span><br>':''}${esc(JOBS[a.job_slug]||a.job_slug)}</td><td>${esc(a.full_name)}</td><td><a href="mailto:${esc(a.email)}">${esc(a.email)}</a></td><td>${esc(a.answers?.years_experience)}</td><td>${esc(a.answers?.remote_authorized)}</td><td>${a.resume_url?`<button class="linkbtn" data-view="${data.indexOf(a)}">View</button> · <a href="${esc(a.resume_url)}">Download</a>`:'Missing'}</td><td><code>${esc(a.application_ref)}</code></td></tr>`).join('') : '<tr><td colspan="8" class="muted">No applications yet.</td></tr>';
 }
 $('login-form').onsubmit = async e => { e.preventDefault(); pass = $('pass').value.trim(); $('login-error').hidden = true; $('login-btn').disabled = true;
   try { await load(); $('login').hidden = true; $('dash').hidden = false; } catch (x) { $('login-error').textContent = x.message; $('login-error').hidden = false; } finally { $('login-btn').disabled = false; } };

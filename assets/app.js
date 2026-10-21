@@ -14,12 +14,16 @@ const btn = document.getElementById('submit-btn');
 const fileInput = form.querySelector('input[type=file]');
 const drop = document.getElementById('drop');
 const dropText = drop.querySelector('.drop-text');
+const preview = document.getElementById('preview');
+const PDF_ONLY = form.dataset.pdfonly === '1';
+let previewUrl = '';
 
 const showErr = m => { err.textContent = m; err.hidden = !m; if (m) err.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
 
 function checkFile(f) {
   if (!f) return 'Please attach your résumé.';
   const ext = f.name.split('.').pop().toLowerCase();
+  if (PDF_ONLY && ext !== 'pdf') return 'Please upload your résumé as a PDF.';
   if (!OK_EXT.includes(ext)) return 'Résumé must be a PDF, DOC, or DOCX file.';
   if (f.size > MAX) return 'Résumé must be 5 MB or smaller.';
   if (f.size === 0) return 'That file looks empty. Please choose another.';
@@ -31,6 +35,16 @@ function onFile() {
   drop.classList.toggle('has-file', !!f && !e);
   dropText.innerHTML = f ? `<strong>${f.name.replace(/</g, '&lt;')}</strong><br><small>${(f.size / 1024).toFixed(0)} KB · click to change</small>` : '<strong>Upload a file</strong><br><small>PDF, DOC, or DOCX, up to 5 MB</small>';
   showErr(f ? e : '');
+  if (preview) {
+    if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = ''; }
+    if (f && !e && f.name.toLowerCase().endsWith('.pdf')) {
+      previewUrl = URL.createObjectURL(new Blob([f], { type: 'application/pdf' }));
+      preview.innerHTML = `<p><strong>Preview</strong> · this is how your résumé will look. <a href="${previewUrl}" target="_blank" rel="noopener">Open in a new tab</a></p><iframe title="Résumé preview" src="${previewUrl}#view=FitH"></iframe>`;
+      preview.hidden = false;
+    } else if (f && !e) {
+      preview.innerHTML = '<p>Preview is available for PDF files only.</p>'; preview.hidden = false;
+    } else { preview.innerHTML = ''; preview.hidden = true; }
+  }
 }
 fileInput.addEventListener('change', onFile);
 ['dragover', 'dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
@@ -77,7 +91,7 @@ form.addEventListener('submit', async e => {
       p_answers: answers, p_resume_path: path, p_resume_filename: file.name, p_user_agent: navigator.userAgent
     });
     if (error) throw new Error('submit: ' + error.message);
-    form.hidden = true;
+    form.hidden = true; if (preview) preview.innerHTML = '';
     document.getElementById('c-name').textContent = name.split(' ')[0];
     document.getElementById('c-id').textContent = data;
     const c = document.getElementById('confirmation');

@@ -71,3 +71,67 @@ module.exports = [
   questions: [yrs("Apache ZooKeeper and Kafka"), auth]
 }
 ];
+const yrs2 = tool => ({ id: "years_experience", label: `How many years of experience do you have with ${tool}?`, type: "select", options: ["Less than 1","1 to 2","3 to 5","More than 5"] });
+module.exports.push(
+{
+  slug: "ic-qa-automation-engineer", inCall: true, ref: "Interview Assessment Job A",
+  title: "QA Automation Engineer",
+  location: "Remote, United States", type: "Full time",
+  salary: "$100,000 to $130,000 USD per year",
+  summary: "Join our web product team to build fast, reliable end to end and API test automation in TypeScript and keep quality high in every release.",
+  responsibilities: [
+    "Design, build and maintain end to end UI tests with Playwright and TypeScript",
+    "Maintain our legacy Cypress component and regression suites while we migrate to Playwright",
+    "Write REST API tests and collections in Postman and validate JSON responses and status codes",
+    "Run automated suites on every pull request with GitHub Actions and keep the pipeline green",
+    "Log, triage and track defects in Jira and take part in Agile ceremonies like sprint planning and retros",
+    "Partner with developers and product managers to define acceptance criteria and test coverage"
+  ],
+  requirements: [
+    "3 or more years of QA automation experience on web applications",
+    "Strong hands on experience with Playwright and TypeScript",
+    "Working experience with Cypress",
+    "Experience testing REST APIs with Postman",
+    "Experience setting up or maintaining CI workflows in GitHub Actions",
+    "Comfortable working in an Agile Scrum team using Jira"
+  ],
+  niceToHave: [
+    "Experience with visual regression testing",
+    "Familiarity with accessibility testing using axe",
+    "Experience with Node.js and npm package management",
+    "ISTQB Foundation certification"
+  ],
+  tools: ["Playwright","TypeScript","Cypress","Postman","REST API testing","GitHub Actions","Jira","Agile Scrum"],
+  questions: [yrs2("Playwright and TypeScript"), auth]
+},
+{
+  slug: "ic-sdet", inCall: true, ref: "Interview Assessment Job B",
+  title: "SDET, Software Development Engineer in Test",
+  location: "Remote, United States", type: "Full time",
+  salary: "$125,000 to $155,000 USD per year",
+  summary: "Own our Java based test framework for web, mobile and backend services, and build the test infrastructure that runs in Jenkins, Docker and AWS.",
+  responsibilities: [
+    "Build and extend our Java test automation framework with Selenium WebDriver and TestNG",
+    "Write backend API tests with REST Assured and validate data with SQL queries against PostgreSQL",
+    "Automate Android and iOS mobile tests with Appium",
+    "Manage builds and dependencies with Maven and run nightly regression in Jenkins pipelines",
+    "Run tests in Docker containers and on AWS services such as EC2 and S3",
+    "Review code from developers and push for testable design and good unit test coverage"
+  ],
+  requirements: [
+    "5 or more years of software testing experience, with at least 3 years writing automation in Java",
+    "Strong experience with Selenium WebDriver and TestNG",
+    "Experience testing REST services with REST Assured",
+    "Hands on Appium experience on Android or iOS",
+    "Experience with Maven builds and Jenkins pipelines",
+    "Working knowledge of Docker, AWS and SQL"
+  ],
+  niceToHave: [
+    "Experience with Selenium Grid or cloud device farms",
+    "Familiarity with Kafka or other message queues",
+    "Experience with performance testing in Gatling",
+    "AWS Cloud Practitioner certification"
+  ],
+  tools: ["Java","Selenium WebDriver","TestNG","REST Assured","Maven","Jenkins","Docker","AWS","SQL","Appium"],
+  questions: [yrs2("Java and Selenium WebDriver"), auth]
+});
